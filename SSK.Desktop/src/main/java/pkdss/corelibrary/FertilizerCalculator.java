@@ -90,6 +90,29 @@ public class FertilizerCalculator
 
 				IsReady = true;
 			}
+			if (getDataNPK() == null)
+			{
+				String[] RowData = Resources.GetResources("NPK").split(System.lineSeparator());
+				int RowCounter = 0;
+				setDataNPK(new ArrayList<DataMappingNPK>());
+				for (String row : RowData)
+				{
+					String[] cols = row.split("[,]", -1);
+					RowCounter++;
+					if (RowCounter > 1 && cols.length == 6)
+					{
+						DataMappingNPK tempVar = new DataMappingNPK();
+						tempVar.setNo(Integer.parseInt(cols[0]));
+						tempVar.setP205(cols[1]);
+						tempVar.setK2O(cols[2]);
+						tempVar.setNPK(Float.parseFloat(cols[3]));
+						tempVar.setUrea(Float.parseFloat(cols[4]));
+						tempVar.setJenis(cols[5]);
+						getDataNPK().add(tempVar);
+					}
+				}
+
+			}
 		}
 		catch (Exception e)
 		{

@@ -8,6 +8,7 @@ import pkdss.corelibrary.model.*;
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
+import java.util.concurrent.TimeUnit;
 
 public class ModelRunner
 {
@@ -20,6 +21,7 @@ public class ModelRunner
 
 	private void OnLogDataUpdate(String LogType, String Message)
 	{
+		System.out.println(Message);
 		if(! LogData.listeners().isEmpty() )
 			for(LogDataUpdateHandler handler : LogData.listeners()){
 				handler.invoke(LogType, Message);
@@ -198,7 +200,7 @@ public class ModelRunner
 		process.WaitForExit();*/
 
 		//init shell
-		ProcessBuilder builder = new ProcessBuilder( "cmd.exe" );
+		ProcessBuilder builder = new ProcessBuilder( "cmd.exe","/K", "d:\\ProgramData\\Anaconda3\\Scripts\\activate.bat", "d:\\ProgramData\\Anaconda3" );
 		if(!workingDirectory.isEmpty())
 			builder.directory(new File(workingDirectory));
 		Process p=null;
@@ -238,6 +240,7 @@ public class ModelRunner
 			}
 		}
 		*/
+
 		// finally close the shell by execution exit command
 		try {
 			p_stdin.write("exit");
@@ -249,6 +252,7 @@ public class ModelRunner
 		}
 
 		// write stdout of shell (=output of all commands)
+		/*
 		Scanner s = new Scanner( p.getInputStream() );
 		while (s.hasNext())
 		{
@@ -256,7 +260,12 @@ public class ModelRunner
 			//System.out.println( s.next() );
 		}
 		s.close();
-
+		*/
+		try {
+			p.waitFor(5, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		//String stdOut = getInputAsString(p.getInputStream());
 		//String stdErr = getInputAsString(p.getErrorStream());
 	}

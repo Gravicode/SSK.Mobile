@@ -2,6 +2,8 @@ import org.ini4j.Ini;
 import org.ini4j.IniPreferences;
 import pkdss.corelibrary.FertilizerCalculator;
 import pkdss.corelibrary.ModelRunner;
+import pkdss.corelibrary.Resources;
+import pkdss.corelibrary.model.FertilizerInfo;
 import pkdss.corelibrary.model.InferenceResult;
 
 import java.io.File;
@@ -11,31 +13,42 @@ import java.io.PrintStream;
 //import static sun.misc.Version.print;
 public class Test {
     public static void main(String[] args) {
-        String filename = "C:\\jobs\\balittanah-pkdss\\SSK.Desktop\\src\\main\\java\\data\\config.ini";
+        String filename = "D:\\jobs\\BalitTanah\\SSK.Mobile\\SSK.Desktop\\src\\main\\java\\data\\config.ini";
         Ini ini = null;
         try {
             ini = new Ini(new File(filename));
             java.util.prefs.Preferences prefs = new IniPreferences(ini);
-            System.out.println("grumpy/homePage: " + prefs.node("grumpy").get("homePage", null));
+            //System.out.println("grumpy/homePage: " + prefs.node("grumpy").get("homePage", null));
 
             String DataRekomendasi = ini.get("Config","DataRekomendasi");
             String WorkingDirectory = ini.get("Config","WorkingDirectory");
             String ModelScript = ini.get("Config","ModelScript");
             String SensorData = ini.get("Config","SensorData");
             String AnacondaFolder = ini.get("Config","AnacondaFolder");
+            Resources.PathToData = ini.get("Config","PathToData");
+            double ureaConst = Double.parseDouble(ini.get("Config","Urea"));
+            double sp36Const = Double.parseDouble(ini.get("Config","SP36"));
+            double kclConst = Double.parseDouble(ini.get("Config","KCL"));
+
             ModelRunner ml = new ModelRunner(WorkingDirectory, ModelScript, SensorData, AnacondaFolder);
+
             InferenceResult hasil = ml.InferenceModel(false, true);
             if (hasil.getIsSucceed())
             {
                 try
                 {
 
-                    System.out.println("start recommendation procecss");
+                    System.out.println("start recommendation process");
                     FertilizerCalculator calc = new FertilizerCalculator(DataRekomendasi);
-                    String TxtUrea = String.valueOf(calc.GetFertilizerDoze(hasil.getModel().getCN(), "Padi", "Urea"));
-                    String TxtSP36 = String.valueOf(calc.GetFertilizerDoze(hasil.getModel().getHCl25P2O5(), "Padi", "SP36"));
-                    String TxtKCL = String.valueOf(calc.GetFertilizerDoze(hasil.getModel().getHCl25K2O(), "Padi", "KCL"));
+                    String TxtUrea = String.valueOf(calc.GetFertilizerDoze(hasil.getModel().getCN(), "Padi", "Urea")*ureaConst);
+                    String TxtSP36 = String.valueOf(calc.GetFertilizerDoze(hasil.getModel().getHCl25P2O5(), "Padi", "SP36")*sp36Const);
+                    String TxtKCL = String.valueOf(calc.GetFertilizerDoze(hasil.getModel().getHCl25K2O(), "Padi", "KCL")*kclConst);
                     System.out.println(String.format("Rekomendasi KCL : %1$s, SP36 : %2$s, Urea : %3$s", TxtKCL, TxtSP36, TxtUrea));
+
+                    FertilizerInfo x = calc.GetNPKDoze(hasil.getModel().getHCl25P2O5(), hasil.getModel().getHCl25K2O(), "Padi");
+
+                    System.out.println(String.format("Rekomendasi NPK 15:15:15 = %1$s",x.getNPK()));
+                    System.out.println(String.format("UREA 15:15:15 = %1$s",x.getUrea()));
 
                 }
                 catch (RuntimeException ex)

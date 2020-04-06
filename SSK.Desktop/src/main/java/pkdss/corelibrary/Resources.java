@@ -8,24 +8,24 @@ import java.nio.file.*;
 import java.util.Scanner; // Import the Scanner class to read text files
 
 public class Resources {
-
+    public static String PathToData = "D:\\jobs\\BalitTanah\\SSK.Mobile\\SSK.Desktop\\src\\main\\java\\data\\";
     public static String GetResources(String Name) {
         String data = "";
         switch (Name) {
             case "Data":
-                data = ReadFromFile("C:\\jobs\\balittanah-pkdss\\SSK.Mobile\\data\\Data.txt");
+                data = ReadFromFile(PathToData+"Data.txt");
                 return data;
                 //break;
             case "NPK":
-                data = ReadFromFile("C:\\jobs\\balittanah-pkdss\\SSK.Mobile\\data\\NPK.csv");
+                data = ReadFromFile(PathToData+"NPK.csv");
                 return data;
             //break;
             case "DataRekomendasi":
-                data = ReadFromFile("C:\\jobs\\balittanah-pkdss\\SSK.Mobile\\data\\DataRekomendasi.txt");
+                data = ReadFromFile(PathToData+"DataRekomendasi.txt");
                 return data;
             //break;
             case "Lokasi":
-                data = ReadFromFile("C:\\jobs\\balittanah-pkdss\\SSK.Mobile\\data\\Lokasi.txt");
+                data = ReadFromFile(PathToData+"Lokasi.txt");
                 return data;
             //break;
             default:
@@ -43,7 +43,7 @@ public class Resources {
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 //System.out.println(data);
-                AllText+=data;
+                AllText+=data+System.lineSeparator();
             }
             myReader.close();
         } catch (FileNotFoundException e) {
